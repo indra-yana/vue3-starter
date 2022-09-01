@@ -88,7 +88,7 @@
                 this.isProcessing = true;
                 this.validation = {};
 
-                await this.$axios.post('http://127.0.0.1:3000/api/v1/auth/login', this.form)
+                await this.$axios.post('/v1/auth/login', this.form)
                     .then(({ data }) => {
                         const { message } = data;
                         const { user } = data.data;
@@ -102,9 +102,9 @@
                             }, 1 * 1000);
                         }, 2 * 1000);
                     }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                        const { message, error = {} } = data;
 
-                        this.validation = errors;
+                        this.validation = error;
                         this.$event.emit('flash-message', { message, type: "error", withToast: true });
                     }).finally(() => {
                         this.isProcessing = false;

@@ -51,7 +51,7 @@
                                 <div class="form-group">
                                     <div class="align-items-center">
                                         <div class="mb-3">
-                                            <img class="img-fluid rounded-circle border border-1 border-secondary" id="img-preview" style="width: 90px; height: 90px;" :src="form.previewAvatar" src="/images/user.png" alt="Avatar">
+                                            <img class="img-fluid rounded-circle border border-1 border-secondary" id="img-preview" style="width: 90px; height: 90px;" :src="form.previewAvatar" alt="Avatar">
                                         </div>
                                     </div>
                                 </div>

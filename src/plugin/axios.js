@@ -3,30 +3,31 @@ import router from '@src/router';
 import { authState } from '@src/stores/authState.js';
 import { loaderState } from '@src/stores/loaderState.js';
 
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.withCredentials = true;
-axios.interceptors.request.use((request) => { 
+const requestHandler = (request) => { 
     // Show the loader
     NProgress.start();
     loaderState().setProcessing(true);
 
     return request; 
-}, (error) => {
+}
+
+const requestErrorHandler = (error) => {
     // Close the loader
     NProgress.done();
     loaderState().setProcessing(false);
 
     return Promise.reject(error);
-});
+}
 
-axios.interceptors.response.use((response) => { 
+const responseHandler = (response) => { 
     // Close the loader
     NProgress.done();
     loaderState().setProcessing(false);
 
     return response; 
-}, (error) => {
+}
+
+const responseErrorHandler = (error) => {
     // Do something with response error before they thrown to catch block.
     if (error) {
         const originalRequest = error.config;
@@ -54,6 +55,14 @@ axios.interceptors.response.use((response) => {
     loaderState().setProcessing(false);
 
     return Promise.reject(error);
-});
+}
+
+axios.defaults.baseURL = 'http://127.0.0.1:3000/api';
+axios.defaults.headers.common['Authorization'] = 'Bearer bearer_token_here';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.headers.common['Accept'] = 'application/json';
+axios.defaults.withCredentials = true;
+axios.interceptors.request.use(requestHandler, requestErrorHandler);
+axios.interceptors.response.use(responseHandler, responseErrorHandler);
 
 export default axios;

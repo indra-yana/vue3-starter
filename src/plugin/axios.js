@@ -58,10 +58,10 @@ const responseErrorHandler = (error) => {
 }
 
 axios.defaults.baseURL = 'http://127.0.0.1:3000/api';
-axios.defaults.headers.common['Authorization'] = 'Bearer bearer_token_here';
+axios.defaults.headers.common['Authorization'] = 'Bearer bearer_token_here';    // TODO: Change this from local storage or state
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.headers.common['Accept-Language'] = 'id';
+axios.defaults.headers.common['Accept-Language'] = 'id';                        // TODO: Change this from local storage or state
 axios.defaults.withCredentials = true;
 axios.interceptors.request.use(requestHandler, requestErrorHandler);
 axios.interceptors.response.use(responseHandler, responseErrorHandler);

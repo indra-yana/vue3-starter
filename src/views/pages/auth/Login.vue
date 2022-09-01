@@ -6,12 +6,12 @@
                 <div class="card-body bg-primary-soft">
                     <form @submit.prevent="doLogin()">
                         <div class="form-group row mb-3">
-                            <label for="identity" class="col-sm-4 col-form-label text-md-right">E-Mail Address / Username<span class="text-danger">*</span></label>
+                            <label for="credential" class="col-sm-4 col-form-label text-md-right">E-Mail Address / Username<span class="text-danger">*</span></label>
                             <div class="col-md-6">
-                                <input type="text" name="identity" id="identity" class="form-control" :class="{'is-invalid': validation.identity}" v-model="form.identity" @input="handleInput('identity')" placeholder="Input Email / Username" required autofocus autocomplete="off" >
-                                <div v-if="validation.identity" class="invalid-feedback mt-1" >
+                                <input type="text" name="credential" id="credential" class="form-control" :class="{'is-invalid': validation.credential}" v-model="form.credential" @input="handleInput('credential')" placeholder="Input credential / Username" required autofocus autocomplete="off" >
+                                <div v-if="validation.credential" class="invalid-feedback mt-1" >
                                     <ul class="mb-0 ps-3">
-                                        <li v-for="(error, index) in validation.identity">{{ error }}</li>
+                                        <li v-for="(error, index) in validation.credential">{{ error }}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -63,7 +63,8 @@
 
 <script>
     import { mapState } from 'pinia'
-    import { authState } from '@src/stores/authState.js';
+    import { authState } from '@src/stores/authState';
+    import authApi from '@src/api/auth';
 
     export default {
         data() {
@@ -71,14 +72,14 @@
                 isProcessing: false,
                 validation: {},
                 form: {
-                    identity: "",
+                    credential: "",
                     password: "",
                     remember: false,
                 }
             };
         },
         created() {
-            
+
         },
         computed: { 
             ...mapState(authState, ['loggedIn'])
@@ -87,42 +88,44 @@
             async doLogin() {
                 this.isProcessing = true;
                 this.validation = {};
+                const { success, failure } = await authApi.login(this.form);
 
-                await this.$axios.post('/v1/auth/login', this.form)
-                    .then(({ data }) => {
-                        const { message } = data;
-                        const { user } = data.data;
+                if (success) {
+                    const { message, data } = success;
+                    const { user } = data;
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                        this.loggedIn(user);
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                    this.loggedIn(user);
+                    setTimeout(() => {
+                        this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
                         setTimeout(() => {
-                            this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
-                            setTimeout(() => {
-                                this.$router.push({name: 'dashboard'})
-                            }, 1 * 1000);
-                        }, 2 * 1000);
-                    }).catch(({ response: { data } }) => {
-                        const { message, error = {} } = data;
+                            this.$router.push({name: 'dashboard'})
+                        }, 1 * 1000);
+                    }, 2 * 1000);
+                }
+                    
+                if (failure) {
+                    const { message, error = {} } = failure;
 
-                        this.validation = error;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        this.isProcessing = false;
-                    });
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                }
+
+                this.isProcessing = false;
             },
             resetForm() {
                 this.isProcessing = false;
                 this.validation = {};
                 this.form = {
-                    identity: "",
+                    credential: "",
                     password: "",
                     remember: false,
                 }
             },
             handleInput(inputName) {
                 switch (inputName) {
-                    case 'identity':
-                        this.validation.identity = null;
+                    case 'credential':
+                        this.validation.credential = null;
                         break;
                     case 'password':
                         this.validation.password = null;

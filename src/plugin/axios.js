@@ -1,5 +1,5 @@
 import axios from 'axios';
-import router from '@src/router/router.js';
+import router from '@src/router';
 import { authState } from '@src/stores/authState.js';
 import { loaderState } from '@src/stores/loaderState.js';
 

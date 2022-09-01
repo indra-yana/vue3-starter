@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppTemplate from "@layouts/AppTemplate.vue";
-import router from '@src/router/router';
+import router from '@src/router';
 import axios from '@src/plugin/axios.js';
 import mitt from 'mitt';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';

@@ -8,7 +8,7 @@
                         <div class="form-group row mb-3">
                             <label for="credential" class="col-sm-4 col-form-label text-md-right">E-Mail Address / Username<span class="text-danger">*</span></label>
                             <div class="col-md-6">
-                                <input type="text" name="credential" id="credential" class="form-control" :class="{'is-invalid': validation.credential}" v-model="form.credential" @input="handleInput('credential')" placeholder="Input credential / Username" required autofocus autocomplete="off" >
+                                <input type="text" name="credential" id="credential" class="form-control" :class="{'is-invalid': validation.credential}" v-model="form.credential" @input="handleInput('credential')" placeholder="Input E-Mail / Username" required autofocus autocomplete="off" >
                                 <div v-if="validation.credential" class="invalid-feedback mt-1" >
                                     <ul class="mb-0 ps-3">
                                         <li v-for="(error, index) in validation.credential">{{ error }}</li>
@@ -64,7 +64,7 @@
 <script>
     import { mapState } from 'pinia'
     import { authState } from '@src/stores/authState';
-    import authApi from '@src/api/auth';
+    import { login } from '@src/api/auth';
 
     export default {
         data() {
@@ -88,7 +88,7 @@
             async doLogin() {
                 this.isProcessing = true;
                 this.validation = {};
-                const { success, failure } = await authApi.login(this.form);
+                const { success, failure } = await login(this.form);
 
                 if (success) {
                     const { message, data } = success;

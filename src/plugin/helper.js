@@ -9,6 +9,7 @@ const splitLongText = (text, split = 20, length = 15) => {
 
 const responseFormat = (response) => {
     let success, failure;
+    response = response || {};
 
     if (response.data) {
         success = response;

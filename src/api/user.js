@@ -1,66 +1,67 @@
 import axios from "@src/plugin/axios";
+import { responseFormat } from "@src/plugin/helper";
 
-export default {
-    changePassword: async (payloads) => {
-        let success, failure = null;
+const changePassword = async (payloads) => {
+    const res = await axios.put(`/v1/user/password/change`, payloads)
+                        .then(({ data }) => success = data)
+                        .catch(({ response: { data } }) => failure = data);
+    
+    return responseFormat(res);
+}
 
-        await axios.put(`/api/v1/user/password/change`, payloads)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
-        
-        return { success, failure }
-    },
-    create: async (payloads, callback = null) => {
-        let success, failure = null;
-
-        await axios.post(`/api/v1/user/create`, payloads, { headers: {'Content-Type': 'multipart/form-data' }})
+const create = async (payloads, callback = null) => {
+    const res = await axios.post(`/v1/user/create`, payloads, { headers: {'Content-Type': 'multipart/form-data' }})
                     .then(({ data }) => success = data)
                     .catch(({ response: { data } }) => failure = data);
 
-        if (callback) {
-            return callback(success, failure); 
-        }
+    if (callback) {
+        return callback(success, failure); 
+    }
 
-        return { success, failure }
-    },
-    update: async (payloads, callback = null) => {
-        let success, failure = null;
+    return responseFormat(res);
+}
 
-        await axios.put(`/api/v1/user/update`, payloads, { headers: {'Content-Type': 'multipart/form-data' }})
+const update = async (payloads, callback = null) => {
+    const res = await axios.put(`/v1/user/update`, payloads, { headers: {'Content-Type': 'multipart/form-data' }})
                     .then(({ data }) => success = data)
                     .catch(({ response: { data } }) => failure = data);
 
-        if (callback) {
-            return callback(success, failure); 
-        }
+    if (callback) {
+        return callback(success, failure); 
+    }
 
-        return { success, failure }
-    },
-    delete: async (payloads) => {
-        let success, failure = null;
+    return responseFormat(res);
+}
 
-        await axios.delete(`/api/v1/user/delete`, { data: payloads })
+const destroy = async (payloads) => {
+    const res = await axios.delete(`/v1/user/delete`, { data: payloads })
                     .then(({ data }) => success = data)
                     .catch(({ response: { data } }) => failure = data);
 
-        return { success, failure }
-    },
-    show: async (payloads) => {
-        let success, failure = null;
+    return responseFormat(res);
+}
 
-        await axios.get(`/api/v1/user/show/${payloads.id}`)
+const show = async (payloads) => {
+    const res = await axios.get(`/v1/user/show/${payloads.id}`)
                     .then(({ data }) => success = data)
                     .catch(({ response: { data } }) => failure = data);
 
-        return { success, failure }
-    },
-    list: async () => {
-        let success, failure = null;
+    return responseFormat(res);
+}
 
-        await axios.get(`/api/v1/user/list`)
+const list = async () => {
+    const res = await axios.get(`/v1/user/list`)
                     .then(({ data }) => success = data)
                     .catch(({ response: { data } }) => failure = data);
 
-        return { success, failure }
-    },
+    return responseFormat(res);
+}
+
+export {
+    changePassword,
+    create,
+    update,
+    destroy,
+    show,
+    list,
 }

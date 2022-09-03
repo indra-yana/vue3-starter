@@ -11,13 +11,13 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto" v-if="isLoggedIn">
                     <router-link :to="{ name: 'dashboard' }" class="nav-item nav-link" active-class="active" exact>Dashboard</router-link>
-                    <router-link :to="{ name: 'mypost' }" class="nav-item nav-link" active-class="active" exact>My Post</router-link>
+                    <!-- <router-link :to="{ name: 'mypost' }" class="nav-item nav-link" active-class="active" exact>My Post</router-link> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" :class="{ 'active': isActive, 'show': isActive }" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" :aria-expanded="isActive">
                             Manage
                         </a>
                         <ul class="dropdown-menu" :class="{ 'show': isActive }" aria-labelledby="navbarDropdown">
-                            <li><router-link :to="{ name: 'post' }" class="dropdown-item" active-class="active" exact>Post</router-link></li>
+                            <!-- <li><router-link :to="{ name: 'post' }" class="dropdown-item" active-class="active" exact>Post</router-link></li> -->
                             <li><router-link :to="{ name: 'account' }" class="dropdown-item" active-class="active" exact>Account</router-link></li>
                             <!-- <li><hr class="dropdown-divider"></li> -->
                             <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->

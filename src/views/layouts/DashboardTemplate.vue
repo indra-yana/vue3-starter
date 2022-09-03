@@ -50,7 +50,7 @@
         created() {
             // Watch the inactive session from authState data store
             authState().$subscribe((mutation, state) => {
-                const { active, message } = state.session;
+                const { active, message } = state.authData.session;
                 if (!active && message) {
                     this.$event.emit('session-inactive', { 'message': message });
                 }

@@ -10,10 +10,12 @@ const authState = defineStore('authState', {
             loggedIn: false,
             hasVerifiedEmail: false,
             user: null,
-        },
-        session: {
-            active: false,
-            message: "", 
+            session: {
+                active: false,
+                accessToken: '',
+                refreshToken: '',
+                message: '', 
+            },
         },
     }),
     getters: {
@@ -28,25 +30,21 @@ const authState = defineStore('authState', {
         }
     },
     actions:{
-        loggedIn(user) {
+        loggedIn(user, token) {
             this.authData.loggedIn = true;
-            this.authData.hasVerifiedEmail = user.verifiedAt != null ? true : false;
+            this.authData.hasVerifiedEmail = user.emailVerifiedAt != null ? true : false;
             this.authData.user = user;
 
-            this.session.active = true;
-            this.session.message = "Session is currently active";
-
-            // Reset all state to start new session 
-            // after successfully loggedIn
-            // postState().$reset();
-            // socialLinkState().$reset();
+            this.authData.session.active = true;
+            this.authData.session.accessToken = token.accessToken;
+            this.authData.session.message = 'Session is currently active';
         },
         logout() {
             this.$reset();
         },
-        hasVerifiedEmail(email_verified_at) {
+        hasVerifiedEmail(emailVerifiedAt) {
             this.authData.hasVerifiedEmail = true;
-            this.authData.user.email_verified_at = email_verified_at; 
+            this.authData.user.emailVerifiedAt = emailVerifiedAt; 
         },
     },
     persist: {

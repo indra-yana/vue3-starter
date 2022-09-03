@@ -41,8 +41,9 @@ const responseErrorHandler = (error) => {
 
                 useAuthState.logout();
                 useAuthState.$patch((state) => {
-                    state.session.active = false;
-                    state.session.message = message;
+                    state.authData.session.message = message;
+                    // state.session.active = false;
+                    // state.session.accessToken = '';
                 });
     
                 // return router.push({name: 'login'});

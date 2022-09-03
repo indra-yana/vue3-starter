@@ -32,7 +32,7 @@
             }
         },
         created() {
-            this.getUser();
+            // this.getUser();
             this.$event.emit('breadcrumbs', { 
                 title: this.routeName, 
                 breadcrumbs: {

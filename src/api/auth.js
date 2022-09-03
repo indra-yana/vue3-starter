@@ -3,8 +3,8 @@ import { responseFormat } from "@src/plugin/helper";
 
 const csrfCookie = async () => {
     const res = await axios.get(`/csrf-cookie`)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
@@ -19,64 +19,64 @@ const login = async (payloads) => {
 
 const logout = async (payloads) => {
     const res = await axios.post(`/v1/auth/logout`, payloads)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
 const register = async (payloads) => {
     const res = await axios.post(`/v1/auth/register`, payloads, { headers: {'Content-Type': 'multipart/form-data' }})
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
 const sendVerificationLink = async (payloads) => {
     const res = await axios.post(`/v1/auth/email/resend`, payloads)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
 const verify = async (verifyUrl) => {
     const res = await axios.get(`${verifyUrl}`)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
 const checkIfHasVerified = async () => {
     const res = await axios.get(`/v1/auth/checkIfHasVerified`)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
 const sendResetLink = async (payloads) => {
     const res = await axios.post(`/v1/auth/password/email`, payloads)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
     
     return responseFormat(res);
 }
 
 const resetPassword = async (payloads) => {
     const res = await axios.post(`/v1/auth/password/reset`, payloads)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
     
     return responseFormat(res);
 }
 
 const whoami = async () => {
     const res = await axios.get(`/v1/auth/whoami`)
-                    .then(({ data }) => success = data)
-                    .catch(({ response: { data } }) => failure = data);
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
     
     return responseFormat(res);
 }

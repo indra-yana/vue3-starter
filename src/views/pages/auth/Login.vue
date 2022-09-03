@@ -102,7 +102,7 @@
                             this.$router.push({name: 'dashboard'})
                         }, 1 * 1000);
                     }, 2 * 1000);
-                }else if (failure) {
+                } else if (failure) {
                     const { message, error = {} } = failure;
 
                     this.validation = error;

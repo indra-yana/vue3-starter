@@ -30,6 +30,8 @@
 </template>
 
 <script>
+    import { sendResetLink } from '@src/api/auth';
+
     export default {
         data() {
             return {
@@ -47,20 +49,23 @@
             async sendResetLink() {
                 this.isProcessing = true,
                 this.validation = {};
-                
-                await this.$axios.post('/password/email', this.form)
-                    .then(({ data }) => {
-                        const { message } = data;
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                    }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                const { success, failure } = await sendResetLink(this.form);
 
-                        this.validation = errors;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        this.isProcessing = false;
-                    });
+                if (success) {
+                    const { message, data } = success;
+
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                } else if (failure) {
+                    const { message, error = {} } = failure;
+
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                this.isProcessing = false;
             },
             resetForm() {
                 this.isProcessing = false;

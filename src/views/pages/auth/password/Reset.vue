@@ -31,7 +31,12 @@
                         <div class="form-group row mb-3">
                             <label for="password_confirmation" class="col-md-4 col-form-label text-md-right">Password Confirmation <span class="text-danger">*</span></label>
                             <div class="col-md-6">
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Retype Your Password" v-model="form.password_confirmation" @input="handleInput('password_confirmation')" required autocomplete="new-password">
+                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" :class="{'is-invalid': validation.password_confirmation}" placeholder="Retype Your Password" v-model="form.password_confirmation" @input="handleInput('password_confirmation')" required autocomplete="new-password">
+                                <div v-if="validation.password_confirmation" class="invalid-feedback mt-1" >
+                                    <ul class="mb-0 ps-3">
+                                        <li v-for="(error, index) in validation.password_confirmation">{{ error }}</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row mb-0">
@@ -49,6 +54,8 @@
 </template>
 
 <script>
+    import { resetPassword } from '@src/api/auth';
+
     export default {
         data() {
             return {
@@ -56,33 +63,36 @@
                 validation: {},
                 form: {
                     token: this.$route.params.token,
-                    email: this.$route.params.email,
+                    email: this.$route.query.email,
                     password: "",
                     password_confirmation: "",
                 }
             };
         },
         created() {
-
+            // console.log(this.form);
         },
         methods: {
             async resetPassword() {
                 this.isProcessing = true;
                 this.validation = {};
 
-                await this.$axios.post('/password/reset', this.form)
-                    .then(({ data }) => {
-                        const { message } = data;
+                const { success, failure } = await resetPassword(this.form);
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                    }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                if (success) {
+                    const { message, data } = success;
 
-                        this.validation = errors;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        this.isProcessing = false;
-                    });
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                } else if (failure) {
+                    const { message, error = {} } = failure;
+
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                this.isProcessing = false;
             },
             resetForm() {
                 this.isProcessing = false;

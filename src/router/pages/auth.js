@@ -43,7 +43,7 @@ const routes = {
             }
         }, {
             name: 'password.reset',
-            path: 'password/reset/:token/:email',
+            path: 'password/reset/:token',
             component: Reset,
             meta: {
                 requiresAuth: false,
@@ -67,7 +67,7 @@ const routes = {
             }
         }, {
             name: 'verification.verify',
-            path: 'email/verify/confirm',
+            path: 'email/verify/:token',
             component: Verify,
             meta: {
                 requiresAuth: true,

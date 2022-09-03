@@ -62,7 +62,7 @@
 </template>
 
 <script>
-    import { mapState } from 'pinia'
+    import { mapActions } from 'pinia'
     import { authState } from '@src/stores/authState';
     import { login } from '@src/api/auth';
 
@@ -82,9 +82,10 @@
 
         },
         computed: { 
-            ...mapState(authState, ['loggedIn'])
+
         },
         methods: {
+            ...mapActions(authState, ['loggedIn']),
             async doLogin() {
                 this.isProcessing = true;
                 this.validation = {};
@@ -92,7 +93,7 @@
 
                 if (success) {
                     const { message, data } = success;
-                    const { user, accessToken } = data;
+                    const { user, token: { accessToken } } = data;
 
                     this.$event.emit('flash-message', { message, type: "success", withToast: true });
                     this.loggedIn(user, { accessToken });

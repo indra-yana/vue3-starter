@@ -40,9 +40,11 @@
         },
         created() {
             authState().$subscribe((mutation, state) => {
-                const { active, message } = state.authData.session;
-                if (!active && message) {
-                    this.$event.emit('session-inactive', { 'message': message });
+                const { loggedIn } = state.authData;
+                if (!loggedIn) {
+                    this.$event.emit('session-inactive', { 
+                        message: 'Your session has expired. Please refresh this page to start new session. <a href="javascript:window.location.reload(true)">Refresh!</a>' 
+                    });
                 }
             });
         },

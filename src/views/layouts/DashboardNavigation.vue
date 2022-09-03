@@ -54,7 +54,7 @@
 </template>
 
 <script>
-    import { mapState } from 'pinia'
+    import { mapState, mapActions } from 'pinia'
     import { authState } from '@src/stores/authState.js';
     import AuthService from '@src/services/AuthService.js';
 
@@ -65,7 +65,7 @@
             };
         },
         computed: { 
-            ...mapState(authState, ['isLoggedIn', 'logout', 'auth']),
+            ...mapState(authState, ['isLoggedIn', 'auth']),
             isActive() {
                 return [
                     'account.password',
@@ -78,23 +78,13 @@
             },
         },
         methods: {
+            ...mapActions(authState, ['logout']),
             user() {
                 return this.auth.user ?? {};
             },
             async doLogout() {
-                const result = await this.authService.logout({});
-                const { success, failure } = result;
-
-                if (success) {
-                    this.logout();
-                    this.$router.push({name: 'login'});
-                }
-
-                if (failure) {
-                    const { message, errors = {} } = failure;
-
-                    console.log(message, errors);
-                }
+                this.logout();
+                this.$router.push({name: 'login'});
             },
         }
     };

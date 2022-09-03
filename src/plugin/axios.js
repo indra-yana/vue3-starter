@@ -3,10 +3,19 @@ import router from '@src/router';
 import { authState } from '@src/stores/authState.js';
 import { loaderState } from '@src/stores/loaderState.js';
 
+const refreshToken= () => {
+    // TODO: get new access token
+}
+
 const requestHandler = (request) => { 
     // Show the loader
     NProgress.start();
     loaderState().setProcessing(true);
+
+    request.headers['Authorization'] = `Bearer ${authState().auth.token.accessToken}`;
+    request.headers['X-Requested-With'] = 'XMLHttpRequest';
+    request.headers['Accept'] = 'application/json';
+    request.headers['Accept-Language'] = 'id'; // TODO: Change this from local storage or state
 
     return request; 
 }
@@ -35,16 +44,12 @@ const responseErrorHandler = (error) => {
         if (error.response) {
             if (error.response.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
-                const useAuthState = authState();
-                const message = 'Your session has expired. Please refresh this page to start new session. <a href="javascript:window.location.reload(true)">Refresh!</a>';
-                error.response.data.message = message;
+                authState().logout();
 
-                useAuthState.logout();
-                useAuthState.$patch((state) => {
-                    state.authData.session.message = message;
-                    // state.session.active = false;
-                    // state.session.accessToken = '';
-                });
+                // TODO: get new refresh token if access token has expired
+
+                // const message = 'Your session has expired. Please refresh this page to start new session. <a href="javascript:window.location.reload(true)">Refresh!</a>';
+                // error.response.data.message = message;
     
                 // return router.push({name: 'login'});
             }
@@ -59,10 +64,10 @@ const responseErrorHandler = (error) => {
 }
 
 axios.defaults.baseURL = 'http://127.0.0.1:3000/api';
-axios.defaults.headers.common['Authorization'] = 'Bearer bearer_token_here';    // TODO: Change this from local storage or state
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.headers.common['Accept-Language'] = 'id';                        // TODO: Change this from local storage or state
+// axios.defaults.headers.common['Authorization'] = `Bearer ${useAuthState.auth().token.accessToken}`;
+// axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// axios.defaults.headers.common['Accept'] = 'application/json';
+// axios.defaults.headers.common['Accept-Language'] = 'id';                        // TODO: Change this from local storage or state
 axios.defaults.withCredentials = true;
 axios.interceptors.request.use(requestHandler, requestErrorHandler);
 axios.interceptors.response.use(responseHandler, responseErrorHandler);

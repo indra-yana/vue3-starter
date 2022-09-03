@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia'
 import SecureLS from "secure-ls";
-import { postState } from '@src/stores/postState.js';
-import { socialLinkState } from '@src/stores/socialLinkState.js';
 
 const ls = new SecureLS({ isCompression: false });
 const authState = defineStore('authState', {
@@ -10,11 +8,9 @@ const authState = defineStore('authState', {
             loggedIn: false,
             hasVerifiedEmail: false,
             user: null,
-            session: {
-                active: false,
+            token: {
                 accessToken: '',
                 refreshToken: '',
-                message: '', 
             },
         },
     }),
@@ -25,19 +21,13 @@ const authState = defineStore('authState', {
         auth() {
             return this.authData;
         },
-        isSessionExpired() {
-            return !this.session.active;
-        }
     },
     actions:{
         loggedIn(user, token) {
             this.authData.loggedIn = true;
             this.authData.hasVerifiedEmail = user.emailVerifiedAt != null ? true : false;
             this.authData.user = user;
-
-            this.authData.session.active = true;
-            this.authData.session.accessToken = token.accessToken;
-            this.authData.session.message = 'Session is currently active';
+            this.authData.token.accessToken = token.accessToken;
         },
         logout() {
             this.$reset();

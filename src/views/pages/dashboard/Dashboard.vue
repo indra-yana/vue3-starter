@@ -25,6 +25,8 @@
 </template>
 
 <script>
+    import { whoami } from '@src/api/auth';
+
     export default {
         data() {
             return {
@@ -32,7 +34,7 @@
             }
         },
         created() {
-            // this.getUser();
+            this.getUser();
             this.$event.emit('breadcrumbs', { 
                 title: this.routeName, 
                 breadcrumbs: {
@@ -43,18 +45,21 @@
         methods: {
             async getUser() {
                 // Testing API call
-                await this.$axios.get("/api/user")
-                    .then(({ data }) => {
-                        this.$event.emit('flash-message', { message: `Welcome back! ${data.name}`, type: "info" });
-                        console.log(data);
+                const { success, failure } = await whoami();
 
-                        return data;
-                    })
-                    .catch(({ response: { data } }) => {
-                        console.log(data);
+                if (success) {
+                    const { message, data } = success;
 
-                        return false;
-                    });
+                    this.$event.emit('flash-message', { message: `Welcome back! ${data.name}`, type: "info" });
+                } else if (failure) {
+                    const { message, error = {} } = failure;
+
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                
             }
         },
     }

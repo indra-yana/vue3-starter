@@ -102,13 +102,13 @@
                             this.$router.push({name: 'dashboard'})
                         }, 1 * 1000);
                     }, 2 * 1000);
-                }
-                    
-                if (failure) {
+                }else if (failure) {
                     const { message, error = {} } = failure;
 
                     this.validation = error;
                     this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
                 }
 
                 this.isProcessing = false;

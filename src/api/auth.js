@@ -81,6 +81,14 @@ const whoami = async () => {
     return responseFormat(res);
 }
 
+const refreshToken = async (payloads) => {
+    const res = await axios.post(`/v1/auth/refreshToken`, payloads)
+                    .then(({ data }) => data)
+                    .catch(({ response: { data } }) => data);
+    
+    return responseFormat(res);
+}
+
 export {
     csrfCookie,
     login,
@@ -92,4 +100,5 @@ export {
     sendResetLink,
     resetPassword,
     whoami,
+    refreshToken,
 }

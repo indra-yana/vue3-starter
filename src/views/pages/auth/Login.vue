@@ -93,10 +93,10 @@
 
                 if (success) {
                     const { message, data } = success;
-                    const { user, token: { accessToken } } = data;
+                    const { user, token: { accessToken, refreshToken } } = data;
 
                     this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                    this.loggedIn(user, { accessToken });
+                    this.loggedIn(user, { accessToken, refreshToken });
                     setTimeout(() => {
                         this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
                         setTimeout(() => {

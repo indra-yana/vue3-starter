@@ -28,6 +28,11 @@ const authState = defineStore('authState', {
             this.authData.hasVerifiedEmail = user.emailVerifiedAt != null ? true : false;
             this.authData.user = user;
             this.authData.token.accessToken = token.accessToken;
+            this.authData.token.refreshToken = token.refreshToken;
+        },
+        refreshToken(token) {
+            this.authData.token.accessToken = token.accessToken;
+            this.authData.token.refreshToken = token.refreshToken;
         },
         logout() {
             this.$reset();

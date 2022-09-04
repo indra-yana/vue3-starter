@@ -34,15 +34,15 @@ const register = async (payloads) => {
 }
 
 const sendVerificationLink = async (payloads) => {
-    const res = await axios.post(`/v1/auth/email/resend`, payloads)
+    const res = await axios.post(`/v1/auth/verify/resend`, payloads)
                     .then(({ data }) => data)
                     .catch(({ response: { data } }) => data);
 
     return responseFormat(res);
 }
 
-const verify = async (verifyUrl) => {
-    const res = await axios.get(`${verifyUrl}`)
+const verify = async (payloads) => {
+    const res = await axios.put(`/v1/auth/verify`, payloads)
                     .then(({ data }) => data)
                     .catch(({ response: { data } }) => data);
 

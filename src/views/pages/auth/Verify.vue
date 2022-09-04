@@ -42,8 +42,9 @@
 </template>
 
 <script>
-    import { mapState } from 'pinia'
+    import { mapState, mapActions } from 'pinia'
     import { authState } from '@src/stores/authState.js';
+    import { sendVerificationLink, verify } from '@src/api/auth';
     
     export default {
         data() {
@@ -52,73 +53,111 @@
                 validation: {},
                 routeName: this.$route.name,
                 verifyUrl: this.$route.query.verify_url,
+                form: {
+                    token: this.$route.params.token,
+                    email: this.$route.query.email,
+                }
             };
         },
         created() {
-            this.checkIfHasVerified();
+            // this.checkIfHasVerified();
         },
         computed: { 
-            ...mapState(authState, ['hasVerifiedEmail']),
+            // ...mapState(authState, ['hasVerifiedEmail']),
         },
         methods: {
+            ...mapActions(authState, ['hasVerifiedEmail']),
             async sendVerificationLink() {
                 this.resetForm();
                 this.isProcessing = true;
 
-                await this.$axios.post('/email/resend', this.form)
-                    .then(({ data }) => {
-                        const { message } = data;
-                        const { hasVerifiedEmail, email_verified_at = null } = data.data;
+                // await this.$axios.post('/email/resend', this.form)
+                //     .then(({ data }) => {
+                //         const { message } = data;
+                //         const { hasVerifiedEmail = null, email_verified_at = null } = data.data;
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                //         this.$event.emit('flash-message', { message, type: "success", withToast: true });
 
-                        if (hasVerifiedEmail) {
-                            this.hasVerifiedEmail(email_verified_at);
+                //         if (hasVerifiedEmail) {
+                //             this.hasVerifiedEmail(email_verified_at);
+                //             setTimeout(() => {
+                //                 this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
+                //                 setTimeout(() => {
+                //                     this.$router.push({name: 'dashboard'})
+                //                 }, 1 * 1000);
+                //             }, 2 * 1000);
+                //         }
+                //     }).catch(({ response: { data } }) => {
+                //         const { message, errors = {} } = data;
+
+                //         this.validation = errors;
+                //         this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                //     }).finally(() => {
+                //         this.isProcessing = false;
+                //     });
+
+
+                const { success, failure } = await sendVerificationLink(this.form);
+
+                if (success) {
+                    const { message, data } = success;
+                    const { emailVerifiedAt = null } = data.user;
+
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+
+                    if (emailVerifiedAt) {
+                        this.hasVerifiedEmail(emailVerifiedAt);
+                        setTimeout(() => {
+                            this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
                             setTimeout(() => {
-                                this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
-                                setTimeout(() => {
-                                    this.$router.push({name: 'dashboard'})
-                                }, 1 * 1000);
-                            }, 2 * 1000);
-                        }
-                    }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                                this.$router.push({name: 'dashboard'})
+                            }, 1 * 1000);
+                        }, 2 * 1000);
+                    }
+                } else if (failure) {
+                    const { message, error = {} } = failure;
 
-                        this.validation = errors;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        this.isProcessing = false;
-                    });
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                this.isProcessing = false;
             },
             async verify() {
                 this.resetForm();
                 this.isProcessing = true;
 
-                await this.$axios.get(this.verifyUrl)
-                    .then(({ data }) => {
-                        const { message } = data;
-                        const { hasVerifiedEmail, email_verified_at = null } = data.data;
+                const { success, failure } = await verify(this.form);
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                if (success) {
+                    const { message, data } = success;
+                    const { emailVerifiedAt = null } = data.user;
 
-                        if (hasVerifiedEmail) {
-                            this.hasVerifiedEmail(email_verified_at);
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+
+                    if (emailVerifiedAt) {
+                        this.hasVerifiedEmail(emailVerifiedAt);
+                        setTimeout(() => {
+                            this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
                             setTimeout(() => {
-                                this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
-                                setTimeout(() => {
-                                    this.$router.push({name: 'dashboard'})
-                                }, 1 * 1000);
-                            }, 2 * 1000);
-                        }
-                    }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                                this.$router.push({name: 'dashboard'})
+                            }, 1 * 1000);
+                        }, 2 * 1000);
+                    }
+                } else if (failure) {
+                    const { message, error = {} } = failure;
 
-                        this.validation = errors;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        this.isProcessing = false;
-                    });
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                this.isProcessing = false;
             },
+            /*
             async checkIfHasVerified() {
                 this.resetForm();
                 this.isProcessing = true;
@@ -148,6 +187,7 @@
                         this.isProcessing = false;
                     });
             },
+            */
             resetForm() {
                 this.isProcessing = false;
                 this.validation = {};

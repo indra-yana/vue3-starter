@@ -52,7 +52,12 @@
                         <div class="form-group row mb-3">
                             <label for="password_confirmation" class="col-md-4 col-form-label text-md-right">Password Confirmation <span class="text-danger">*</span></label>
                             <div class="col-md-6">
-                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Retype Your Password" v-model="form.password_confirmation" @input="handleInput('password_confirmation')" required autocomplete="new-password">
+                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" :class="{'is-invalid': validation.password_confirmation}" placeholder="Retype Your Password" v-model="form.password_confirmation" @input="handleInput('password_confirmation')" required autocomplete="new-password">
+                                <div v-if="validation.password_confirmation" class="invalid-feedback mt-1" >
+                                    <ul class="mb-0 ps-3">
+                                        <li v-for="(error, index) in validation.password_confirmation">{{ error }}</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -63,7 +68,7 @@
                                 <div class="form-group">
                                     <div class="align-items-center">
                                         <div class="mb-3">
-                                            <img class="img-fluid rounded-circle border border-1 border-secondary" id="img-preview" style="width: 90px; height: 90px;" :src="form.previewAvatar" alt="Avatar">
+                                            <img class="img-fluid rounded-circle border border-1 border-secondary" id="img-preview" style="width: 90px; height: 90px;" :src="previewAvatar" alt="Avatar">
                                         </div>
                                     </div>
                                 </div>
@@ -94,7 +99,7 @@
     import { mapState } from 'pinia'
     import { registerState } from '@src/stores/registerState.js';
     import { authState } from '@src/stores/authState.js';
-    import { helloWorld } from '@src/assets/js/hello-world.js';
+    import { register } from '@src/api/auth';
 
     export default {
         data() {
@@ -108,8 +113,8 @@
                     password: "",
                     password_confirmation: "",
                     avatar: "",
-                    previewAvatar: '/images/user.png',
-                }
+                },
+                previewAvatar: '/images/user.png',
             };
         },
         created() {
@@ -126,40 +131,41 @@
                 this.isProcessing = true;
                 this.validation = {};
 
-                const options = { headers: {'Content-Type': 'multipart/form-data' }};
                 const formData = new FormData();
-
                 for (const item in this.form) {
                     formData.append(item, this.form[item])
                 }
 
-                await this.$axios.post('/register', formData, options)
-                    .then(({ data }) => {
-                        const { message } = data;
-                        const { user } = data.data;
+                const { success, failure } = await register(formData);
 
-                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                        // this.resetFormData();
-                        this.loggedIn(user);
+                if (success) {
+                    const { message, data } = success;
+                    const { user, token: { accessToken } } = data;
+
+                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                    // this.resetFormData();
+                    this.loggedIn(user, { accessToken });
+                    setTimeout(() => {
+                        this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
                         setTimeout(() => {
-                            this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
-                            setTimeout(() => {
-                                this.$router.push({name: 'dashboard'})
-                            }, 1 * 1000);
-                        }, 2 * 1000);
-                    }).catch(({ response: { data } }) => {
-                        const { message, errors = {} } = data;
+                            this.$router.push({name: 'dashboard'})
+                        }, 1 * 1000);
+                    }, 2 * 1000);
+                } else if (failure) {
+                    const { message, error = {} } = failure;
 
-                        this.validation = errors;
-                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                    }).finally(() => {
-                        // this.setFormData(this.form);
-                        this.isProcessing = false;
-                    });
+                    this.validation = error;
+                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                } else {
+                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                }
+
+                this.isProcessing = false;
             },
             resetForm() {
                 this.isProcessing = false;
                 this.validation = {};
+                this.previewAvatar = '/images/user.png',
                 this.form = {
                     name: "",
                     username: "",
@@ -167,7 +173,6 @@
                     password: "",
                     password_confirmation: "",
                     avatar: "",
-                    previewAvatar: '/images/user.png',
                 }
 
                 // this.resetFormData();
@@ -193,7 +198,7 @@
                     case 'avatar':
                         this.validation.avatar = null;
                         this.form.avatar = event.target.files[0];   // or this.$refs.file.files.item(0);
-                        this.form.previewAvatar = URL.createObjectURL(this.form.avatar);
+                        this.previewAvatar = URL.createObjectURL(this.form.avatar);
                         break;
                     default:
                         break;

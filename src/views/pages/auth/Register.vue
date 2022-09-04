@@ -96,8 +96,7 @@
 </template>
 
 <script>
-    import { mapState } from 'pinia'
-    import { registerState } from '@src/stores/registerState.js';
+    import { mapActions } from 'pinia'
     import { authState } from '@src/stores/authState.js';
     import { register } from '@src/api/auth';
 
@@ -118,15 +117,13 @@
             };
         },
         created() {
-            // if (this.getFormData != null) {
-            //     this.form = this.getFormData;
-            // }
+
         },
         computed: { 
-            ...mapState(registerState, ['setFormData', 'getFormData', 'resetFormData']),
-            ...mapState(authState, ['loggedIn']),
+
         },
         methods: {
+            ...mapActions(authState, ['loggedIn']),
             async register() {
                 this.isProcessing = true;
                 this.validation = {};
@@ -143,7 +140,6 @@
                     const { user, token: { accessToken } } = data;
 
                     this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                    // this.resetFormData();
                     this.loggedIn(user, { accessToken });
                     setTimeout(() => {
                         this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });

@@ -5,7 +5,7 @@ import { loaderState } from '@src/stores/loaderState.js';
 import { refreshToken } from '@src/api/auth';
 
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:3000/api',
+    baseURL: import.meta.env.VITE_APP_BE_URL || 'http://127.0.0.1:3000/api',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json', 

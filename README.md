@@ -13,6 +13,18 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 ## Project Setup
 
 ```sh
+# .env setup
+# app configuration
+VITE_APP_NAME="Awesome App"
+VITE_APP_VERSION="1.0"
+VITE_APP_ENV=local
+VITE_APP_URL=http://localhost
+VITE_APP_BE_URL=http://127.0.0.1:3000/api
+VITE_APP_HOST=localhost
+VITE_APP_PORT=3002
+```
+
+```sh
 npm install
 ```
 

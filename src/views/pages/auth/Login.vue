@@ -72,8 +72,9 @@
                 isProcessing: false,
                 validation: {},
                 form: {
-                    credential: "",
-                    password: "",
+                    // Dummy User
+                    credential: "rambo",
+                    password: "secret",
                     remember: false,
                 }
             };

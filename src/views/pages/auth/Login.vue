@@ -88,32 +88,59 @@
         methods: {
             ...mapActions(authState, ['loggedIn']),
             async doLogin() {
-                this.isProcessing = true;
                 this.validation = {};
-                const { success, failure } = await login(this.form);
+                
+                await login(this.form, {
+                    onLoading: (isLoading) => {
+                        this.isProcessing = isLoading;
+                    },
+                    onSuccess: (success) => {
+                        const { message, data } = success;
+                        const { user, token: { accessToken, refreshToken } } = data;
 
-                if (success) {
-                    const { message, data } = success;
-                    const { user, token: { accessToken, refreshToken } } = data;
-
-                    this.$event.emit('flash-message', { message, type: "success", withToast: true });
-                    this.loggedIn(user, { accessToken, refreshToken });
-                    setTimeout(() => {
-                        this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
+                        this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                        this.loggedIn(user, { accessToken, refreshToken });
                         setTimeout(() => {
-                            this.$router.push({name: 'dashboard'})
-                        }, 1 * 1000);
-                    }, 2 * 1000);
-                } else if (failure) {
-                    const { message, error = {} } = failure;
+                            this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
+                            setTimeout(() => {
+                                this.$router.push({ name: 'dashboard' })
+                            }, 1 * 1000);
+                        }, 2 * 1000);
+                    },
+                    onFailure: (failure) => {
+                        const { message, error = {} } = failure;
 
-                    this.validation = error;
-                    this.$event.emit('flash-message', { message, type: "error", withToast: true });
-                } else {
-                    this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
-                }
+                        this.validation = error;
+                        this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                    }
+                });
 
-                this.isProcessing = false;
+
+                // return;
+                // const { success, failure } = await login(this.form);
+
+                // if (success) {
+                //     const { message, data } = success;
+                //     const { user, token: { accessToken, refreshToken } } = data;
+
+                //     this.$event.emit('flash-message', { message, type: "success", withToast: true });
+                //     this.loggedIn(user, { accessToken, refreshToken });
+                //     setTimeout(() => {
+                //         this.$event.emit('flash-message', { message: "Redirecting...", type: "info" });
+                //         setTimeout(() => {
+                //             this.$router.push({name: 'dashboard'})
+                //         }, 1 * 1000);
+                //     }, 2 * 1000);
+                // } else if (failure) {
+                //     const { message, error = {} } = failure;
+
+                //     this.validation = error;
+                //     this.$event.emit('flash-message', { message, type: "error", withToast: true });
+                // } else {
+                //     this.$event.emit('flash-message', { message: "An error occured :( unknown response.", type: "error" });
+                // }
+
+                // this.isProcessing = false;
             },
             resetForm() {
                 this.isProcessing = false;

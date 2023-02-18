@@ -1,5 +1,10 @@
 import axios from "@src/plugin/axios";
 import { responseFormat } from "@src/plugin/helper";
+import { sendApi } from "@src/api/apiService";
+
+const apiCall = async ({ config }, cb = { onLoading, onSuccess, onFailure }) => {
+    
+}
 
 const csrfCookie = async () => {
     const res = await axios.get(`/csrf-cookie`)
@@ -9,12 +14,22 @@ const csrfCookie = async () => {
     return responseFormat(res);
 }
 
-const login = async (payloads) => {
+const login = async (payloads, cb = { onLoading, onSuccess, onFailure }) => {
+    cb.onLoading(true);
+
     const res = await axios.post(`/v1/auth/login`, payloads)
                     .then(({ data }) => data)
                     .catch(({ response: { data } }) => data);
+    
+    const { success, failure } = responseFormat(res);
 
-    return responseFormat(res);
+    if (success) {
+        cb.onSuccess(success);
+    } else if (failure) {
+        cb.onFailure(failure);
+    }
+
+    cb.onLoading(false);
 }
 
 const logout = async (payloads) => {
@@ -74,11 +89,15 @@ const resetPassword = async (payloads) => {
 }
 
 const whoami = async () => {
-    const res = await axios.get(`/v1/auth/whoami`)
-                    .then(({ data }) => data)
-                    .catch(({ response: { data } }) => data);
+    // const res = await axios.get(`/v1/auth/whoami`)
+    //                 .then(({ data }) => data)
+    //                 .catch(({ response: { data } }) => data);
     
-    return responseFormat(res);
+    // return responseFormat(res);
+
+    return sendApi({
+        key: 'user.whoami',
+    });
 }
 
 const refreshToken = async (payloads) => {
